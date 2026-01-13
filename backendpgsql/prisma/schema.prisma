@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WarehouseStatus {
+  publish
+  unpublish
+  in_active
+}
+
+model Warehouse {
+  id              Int             @id @default(autoincrement())
+  warehouseId     String          @unique
+  warehouse_name  String
+  address1        String
+  address2        String?
+  areaLocality    String
+  state           String
+  city            String
+  pincode         String
+  gstno           String?
+
+  totalLotArea    Float
+  coveredArea     Float
+  noOfDocs        Int?
+  noOfGate        Int?
+  storageHeight   Float?
+  parkingArea     Float?
+
+  status          WarehouseStatus @default(unpublish)
+  warehouseImages String[]        @default([])
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
