@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { ProtectedRoute } from '@/app/components/ProtectedRoute';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Button } from '@mui/material';
 import { WarehouseTable } from '@/app/components/WarehouseTable';
 import { SearchBar } from '@/app/components/SearchBar';
@@ -13,17 +14,27 @@ export default function DashboardPage() {
   const [warehouses, setWarehouses] = useState<WarehouseData[]>([]);
   const [filteredWarehouses, setFilteredWarehouses] = useState<WarehouseData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // const [formOpen, setFormOpen] = useState(false);
-  // const [selectedWarehouse, setSelectedWarehouse] = useState<WarehouseData | undefined>();
-  const [page, setPage] = useState(1);
-  const limit = 7;
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const limit = 7;
+  // Read initial page from URL, default to 1
+  const initialPage = Number(searchParams.get('page')) || 1;
+  const [page, setPageState] = useState(initialPage);
+
+  // Update URL when page changes
+  const setPage = (newPage: number) => {
+    setPageState(newPage);
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set('page', String(newPage));
+    router.push(`?${params.toString()}`);
+  };
+
   useEffect(() => {
     fetchWarehouses(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
-
-  const router = useRouter();
 
   const fetchWarehouses = async (currentPage: number) => {
     setIsLoading(true);
@@ -48,25 +59,29 @@ export default function DashboardPage() {
       setIsLoading(false);
     }
   };
-  const handleSearch = async (query: string | { q?: string; state?: string; city?: string }) => {
-    if (typeof query === 'string' && !query.trim()) {
-      setPage(1);
-      fetchWarehouses(1);
-      return;
-    }
 
-    if (typeof query === 'object') {
+  const handleSearch = async (query: string | { q?: string; state?: string; city?: string }) => {
+    let searchObj: { q?: string; state?: string; city?: string } = {};
+    if (typeof query === 'string') {
+      if (!query.trim()) {
+        setPage(1);
+        fetchWarehouses(1);
+        return;
+      }
+      searchObj.q = query;
+    } else if (typeof query === 'object') {
       const { q, state, city } = query || {};
       if ((!q || !q.trim()) && !state && !city) {
         setPage(1);
         fetchWarehouses(1);
         return;
       }
+      searchObj = { ...query };
     }
 
     setIsLoading(true);
     try {
-      const res = await warehouseAPI.search(query);
+      const res = await warehouseAPI.search(searchObj);
       const data = res.data.data || [];
       setFilteredWarehouses(data);
       setTotal(res.data.total);
@@ -112,7 +127,8 @@ export default function DashboardPage() {
   );
 
   return (
-    <Box>
+    <ProtectedRoute>
+      <Box>
       {/* Top Bar  */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '16px', fontWeight: 700, color: '#151515' }}>
@@ -150,6 +166,7 @@ export default function DashboardPage() {
         onPageChange={setPage}
       />
 
-    </Box>
+      </Box>
+    </ProtectedRoute>
   );
 }

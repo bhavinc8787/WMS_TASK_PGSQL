@@ -1,10 +1,10 @@
-
-import React from "react";
-import "./globals.css";
+import React from 'react';
+import Providers from './components/Providers';
+import './globals.css';
 
 export const metadata = {
-  title: "WMS Warehouse Management System",
-  description: "Manage your warehouses efficiently",
+  title: 'WMS Warehouse Management System',
+  description: 'Manage your warehouses efficiently',
 };
 
 export default function RootLayout({
@@ -15,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

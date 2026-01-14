@@ -1,16 +1,19 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-enum WarehouseStatus {
-  publish
-  unpublish
-  in_active
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Warehouse {
@@ -36,5 +39,12 @@ model Warehouse {
   warehouseImages String[]        @default([])
 
   createdAt       DateTime        @default(now())
+
   updatedAt       DateTime        @updatedAt
+}
+
+enum WarehouseStatus { 
+  publish
+  unpublish
+  in_active
 }

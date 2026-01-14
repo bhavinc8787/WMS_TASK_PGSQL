@@ -2,7 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { config } from './config';
 import path from 'path';
+
 import warehouseRoutes from './routes/warehouseRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app: Express = express();
 
@@ -18,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads/warehouses', express.static(path.join(process.cwd(), 'uploads/warehouses')));
 
+
+app.use('/api/auth', authRoutes);
 app.use('/api/warehouses', warehouseRoutes);
 
 app.get('/api/health', (req: Request, res: Response) => {

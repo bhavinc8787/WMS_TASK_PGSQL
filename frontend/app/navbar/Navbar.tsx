@@ -5,14 +5,14 @@ import { AppBar, Toolbar, Box, Avatar, Menu, MenuItem, Button, IconButton, Drawe
 import MenuIcon from '@mui/icons-material/Menu';
 import { MapPin, LayoutDashboard, Truck, Warehouse, Settings as SettingIcon, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-// import { useAppDispatch } from '@/store/hooks';
-// import { logout as logoutAction } from '@/store/authSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { logout as logoutAction } from '@/store/authSlice';
 
 const masterBg = '#1411e4';
 
 export function Navbar() {
   const router = useRouter();
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const [masterAnchor, setMasterAnchor] = useState<null | HTMLElement>(null);
   const [moreAnchor, setMoreAnchor] = useState<null | HTMLElement>(null);
@@ -24,10 +24,10 @@ export function Navbar() {
   const openMore = Boolean(moreAnchor);
   const openProfile = Boolean(profileAnchor);
 
-  // const handleLogout = () => {
-  //   dispatch(logoutAction());
-  //   router.push('/login');
-  // };
+  const handleLogout = () => {
+    dispatch(logoutAction());
+    router.push('/login');
+  };
 
   const navItems = [
     { label: 'Dashboard', icon: <LayoutDashboard size={18} />, action: () => router.push('/dashboard') },
@@ -36,7 +36,7 @@ export function Navbar() {
     { label: 'Masters', icon: <SettingIcon size={18} />, action: () => router.push('/masters') },
     { label: 'More', icon: <MoreHorizontal size={18} />, action: () => router.push('/more') },
     { label: 'Profile', icon: <Avatar sx={{ width: 24, height: 24 }} />, action: () => setProfileAnchor(null) },
-    // { label: 'Logout', icon: null, action: handleLogout }
+    { label: 'Logout', icon: null, action: handleLogout }
   ];
 
   const buttonShadow = {
@@ -132,7 +132,7 @@ export function Navbar() {
 
             <Menu anchorEl={profileAnchor} open={openProfile} onClose={() => setProfileAnchor(null)}>
               <MenuItem onClick={() => setProfileAnchor(null)}>Profile</MenuItem>
-              {/* <MenuItem onClick={handleLogout}>Logout</MenuItem> */}
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
 

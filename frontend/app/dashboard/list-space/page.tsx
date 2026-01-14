@@ -6,7 +6,7 @@ import ListSpaceForm from "./ListSpaceForm";
 
 // Page component that handles query params and renders the form
 export default function ListSpacePage() {
-  // Read URL search parameters (e.g. ?id=123)
+  // Read URL search parameters 
   const searchParams = useSearchParams();
 
   // Extract warehouse ID from query params

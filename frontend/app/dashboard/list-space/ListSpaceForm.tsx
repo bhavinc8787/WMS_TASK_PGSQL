@@ -21,34 +21,107 @@ import statesCities from '../../data/statesCities.json';
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 const validationSchema = Yup.object({
-  warehouse_name: Yup.string().required('Warehouse name is required'),
-  address1: Yup.string().required('Address is required'),
-  areaLocality: Yup.string().required('Area / Locality is required'),
-  state: Yup.string().required('State is required'),
-  city: Yup.string().required('City is required'),
+  // Warehouse name
+  warehouse_name: Yup.string()
+    .trim()
+    .min(3, 'Warehouse name must be at least 3 characters')
+    .max(100, 'Warehouse name is too long')
+    .required('Warehouse name is required'),
 
+  // Address
+  address1: Yup.string()
+    .trim()
+    .min(5, 'Address is too short')
+    .max(200, 'Address is too long')
+    .required('Address is required'),
+
+  address2: Yup.string()
+    .trim()
+    .max(200, 'Address is too long')
+    .nullable(),
+
+  // Area / Locality
+  areaLocality: Yup.string()
+    .trim()
+    .min(3, 'Area / Locality is too short')
+    .max(100, 'Area / Locality is too long')
+    .required('Area / Locality is required'),
+
+  // Location
+  state: Yup.string()
+    .required('State is required'),
+
+  city: Yup.string()
+    .required('City is required'),
+
+  // Pincode (6 digits, cannot start with 0)
   pincode: Yup.string()
     .required('Pincode is required')
-    .matches(/^[0-9]{6}$/, 'Pincode must be exactly 6 digits'),
+    .matches(/^[1-9][0-9]{5}$/, 'Pincode must be 6 digits and not start with 0'),
 
-  gstno: Yup.string().matches(/^[0-9A-Z]{15}$/, 'GST number must be exactly 15 characters'),
+  // GST number (India)
+  gstno: Yup.string()
+    .transform((v) => v?.toUpperCase())
+    .matches(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      'Invalid GST number'
+    )
+    .nullable(),
 
+  // Warehouse size info
   totalLotArea: Yup.number()
-    .required('Total lot area is required')
-    .min(1, 'Total lot area must be at least 1'),
+    .typeError('Total lot area must be a number')
+    .positive('Total lot area must be greater than 0')
+    .required('Total lot area is required'),
 
   coveredArea: Yup.number()
-    .required('Covered area is required')
-    .min(1, 'Covered area must be at least 1'),
+    .typeError('Covered area must be a number')
+    .positive('Covered area must be greater than 0')
+    .max(Yup.ref('totalLotArea'), 'Covered area cannot exceed total lot area')
+    .required('Covered area is required'),
 
   storageHeight: Yup.number()
-    .required('Storage height is required')
-    .min(1, 'Storage height must be at least 1 ft'),
+    .typeError('Storage height must be a number')
+    .min(5, 'Storage height must be at least 5 ft')
+    .max(60, 'Storage height seems unrealistic')
+    .required('Storage height is required'),
 
-  status: Yup.string().oneOf(['publish', 'unpublish']).required(),
+  // Optional numeric fields
+  noOfDocs: Yup.number()
+    .integer('Must be a whole number')
+    .min(0, 'Cannot be negative')
+    .nullable(),
+
+  noOfGate: Yup.number()
+    .integer('Must be a whole number')
+    .min(0, 'Cannot be negative')
+    .nullable(),
+
+  parkingArea: Yup.number()
+    .min(0, 'Parking area cannot be negative')
+    .nullable(),
+
+  // Status
+  status: Yup.string()
+    .oneOf(['publish', 'unpublish'])
+    .required('Status is required'),
+
+  // Images
   warehouseImages: Yup.array()
     .max(4, 'You can upload maximum 4 images')
-    .of(Yup.mixed<File>())
+    .of(
+      Yup.mixed<File>()
+        .test(
+          'fileSize',
+          'Each image must be under 5MB',
+          (file) => !file || file.size <= 5 * 1024 * 1024
+        )
+        .test(
+          'fileType',
+          'Only JPG or PNG images are allowed',
+          (file) => !file || ['image/jpeg', 'image/png'].includes(file.type)
+        )
+    ),
 });
 
 
@@ -56,11 +129,14 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams?.get('id');
+  const idNum = id ? Number(id) : undefined;
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [initialValues, setInitialValues] = React.useState<WarehouseData | null>(null);
   const [images, setImages] = React.useState<(File | null)[]>([null, null, null, null]);
   const [previews, setPreviews] = React.useState<(string | null)[]>([null, null, null, null]);
   const defaultValues: WarehouseData = {
+    id: 0,
+    warehouseId: '',
     warehouse_name: '',
     address1: '',
     address2: '',
@@ -83,9 +159,9 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
 
   React.useEffect(() => {
     const fetchForEdit = async () => {
-      if (!id) return;
+      if (!idNum && idNum !== 0) return;
       try {
-        const res = await warehouseAPI.getById(id);
+        const res = await warehouseAPI.getById(idNum);
         const data = res.data.data;
         if (data) setInitialValues(data);
       } catch (err) {
@@ -93,7 +169,7 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
       }
     };
     fetchForEdit();
-  }, [id]);
+  }, [idNum]);
 
   React.useEffect(() => {
     const st = initialValues?.state;
@@ -138,8 +214,8 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
           });
 
         // 4. Send to API
-        if (id) {
-          await warehouseAPI.updateWarehouse(id, formData);
+        if (typeof idNum === 'number' && !isNaN(idNum)) {
+          await warehouseAPI.updateWarehouse(idNum, formData);
         } else {
           await warehouseAPI.createWarehouse(formData);
         }
