@@ -69,10 +69,30 @@ export const WarehouseTable = ({
   };
 
   return (
-    <Box>
-      {/* TABLE CONTAINER */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2, border: '1px solid #ddd', overflow: 'hidden' }}>
-        <Table size="small" sx={{ '& .MuiTableCell-root': { fontSize: 11, py: 0.5 } }}>
+    <Box sx={{ width: '100%' }}>
+      {/* Responsive Table Container */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: 2,
+          border: '1px solid #ddd',
+          overflow: 'auto',
+          maxWidth: '100vw',
+          boxShadow: { xs: 0, sm: 1 },
+        }}
+      >
+        <Table
+          size="small"
+          sx={{
+            minWidth: 650,
+            '& .MuiTableCell-root': {
+              fontSize: { xs: 10, sm: 11 },
+              py: { xs: 0.5, sm: 0.7 },
+              px: { xs: 0.5, sm: 1 },
+              wordBreak: 'break-word',
+            },
+          }}
+        >
           {/* TABLE HEADER */}
           <TableHead>
             <TableRow sx={{ backgroundColor: '#1411e4' }}>
@@ -92,9 +112,11 @@ export const WarehouseTable = ({
                   sx={{
                     fontWeight: 'bold',
                     color: 'white',
-                    fontSize: 11,
+                    fontSize: { xs: 10, sm: 11 },
                     borderRight: '1px solid rgba(255,255,255,0.3)',
-                    py: 0.7,
+                    py: { xs: 0.5, sm: 0.7 },
+                    px: { xs: 0.5, sm: 1 },
+                    whiteSpace: { xs: 'normal', sm: 'nowrap' },
                   }}
                 >
                   {head}
@@ -126,18 +148,18 @@ export const WarehouseTable = ({
                   hover
                   sx={{
                     backgroundColor: index % 2 === 0 ? '#ffffff' : '#f0f0f0',
-                    height: 30,
+                    height: { xs: 28, sm: 30 },
                   }}
                 >
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>{warehouse.warehouse_name}</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 }, maxWidth: { xs: 90, sm: 160 }, overflowWrap: 'break-word' }}>{warehouse.warehouse_name}</TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 }, maxWidth: { xs: 120, sm: 200 }, overflowWrap: 'break-word' }}>
                     {warehouse.address1}
                     {warehouse.address2 ? `, ${warehouse.address2}` : ''}
                   </TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>{warehouse.city}</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>{warehouse.state}</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>{warehouse.totalLotArea}</TableCell>
-                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: 11 }}>{warehouse.coveredArea}</TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 } }}>{warehouse.city}</TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 } }}>{warehouse.state}</TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 } }}>{warehouse.totalLotArea}</TableCell>
+                  <TableCell sx={{ borderRight: '1px solid #ddd', fontSize: { xs: 10, sm: 11 } }}>{warehouse.coveredArea}</TableCell>
 
                   {/* IMAGE ICON COLUMN */}
                   <TableCell sx={{ borderRight: '1px solid #ddd', textAlign: 'center' }}>
@@ -152,7 +174,6 @@ export const WarehouseTable = ({
                       <Typography sx={{ fontSize: 10, opacity: 0.6 }}>No Image</Typography>
                     )}
                   </TableCell>
-
 
                   {/* STATUS */}
                   <TableCell sx={{ borderRight: '1px solid #ddd' }}>
@@ -172,7 +193,7 @@ export const WarehouseTable = ({
 
                   {/* Action Buttons Delet & Edit */}
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', gap: 0.5, flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' } }}>
                       <IconButton size="small" onClick={() => onEdit(warehouse)}>
                         <EditIcon sx={{ fontSize: 14 }} />
                       </IconButton>
@@ -202,16 +223,15 @@ export const WarehouseTable = ({
       )}
 
       {/* IMAGE POPUP */}
-
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontSize: 14, fontWeight: 700 }}>Warehouse Images</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
             {imageTitles.map((title, i) => (
-              <Grid item xs={6} sm={4} md={3} key={i}>
+              <Grid item xs={12} sm={6} md={3} key={i}>
                 <Typography sx={{ fontSize: 11, fontWeight: 600, mb: 0.5 }}>{title}</Typography>
                 {selectedImages[i] ? (
-                  <Paper sx={{ p: 0.5, borderRadius: 2, height: 120, display: 'flex', justifyContent: 'center' }}>
+                  <Paper sx={{ p: 0.5, borderRadius: 2, height: { xs: 90, sm: 120 }, display: 'flex', justifyContent: 'center' }}>
                     <img
                       src={`http://localhost:5000/uploads/warehouses/${selectedImages[i]?.split(/[/\\]/).pop()}`}
                       alt={title}
@@ -219,7 +239,7 @@ export const WarehouseTable = ({
                     />
                   </Paper>
                 ) : (
-                  <Paper sx={{ p: 0.5, borderRadius: 2, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}>
+                  <Paper sx={{ p: 0.5, borderRadius: 2, height: { xs: 90, sm: 120 }, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}>
                     <Typography sx={{ fontSize: 10, opacity: 0.6 }}>No Image</Typography>
                   </Paper>
                 )}

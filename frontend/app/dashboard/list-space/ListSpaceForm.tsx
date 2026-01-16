@@ -125,7 +125,8 @@ const validationSchema = Yup.object({
 });
 
 
-export default function ListSpacePage({ warehouseId }: { warehouseId: string | null }) {
+export default function ListSpacePage() {
+  //{ warehouseId }: { warehouseId: string | null }
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams?.get('id');
@@ -186,15 +187,15 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
     onSubmit: async (values) => {
       try {
         // 1. Prepare normal numeric payload
-        const payload = {
-          ...values,
-          totalLotArea: Number(values.totalLotArea),
-          coveredArea: Number(values.coveredArea),
-          noOfDocs: values.noOfDocs ? Number(values.noOfDocs) : undefined,
-          noOfGate: values.noOfGate ? Number(values.noOfGate) : undefined,
-          storageHeight: values.storageHeight ? Number(values.storageHeight) : undefined,
-          parkingArea: values.parkingArea ? Number(values.parkingArea) : undefined,
-        };
+        // const payload = {
+        //   ...values,
+        //   totalLotArea: Number(values.totalLotArea),
+        //   coveredArea: Number(values.coveredArea),
+        //   noOfDocs: values.noOfDocs ? Number(values.noOfDocs) : undefined,
+        //   noOfGate: values.noOfGate ? Number(values.noOfGate) : undefined,
+        //   storageHeight: values.storageHeight ? Number(values.storageHeight) : undefined,
+        //   parkingArea: values.parkingArea ? Number(values.parkingArea) : undefined,
+        // };
 
         // 2. Convert to FormData
         const formData = new FormData();
@@ -206,7 +207,7 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
         });
 
 
-        // 3. Append Images (max 4 already enforced in your state)
+        // 3. Append Images (max 4 already enforced in state)
         images
           .filter(Boolean)
           .forEach((file) => {
@@ -245,22 +246,22 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
   }, [previews]);
 
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
+  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = event.target.files;
+  //   if (!files) return;
 
-    let selectedFiles = Array.from(files);
+  //   let selectedFiles = Array.from(files);
 
-    // limit total images to 4
-    const total = images.length + selectedFiles.length;
-    if (total > 4) {
-      selectedFiles = selectedFiles.slice(0, 4 - images.length);
-    }
+  //   // limit total images to 4
+  //   const total = images.length + selectedFiles.length;
+  //   if (total > 4) {
+  //     selectedFiles = selectedFiles.slice(0, 4 - images.length);
+  //   }
 
-    const updated = [...images, ...selectedFiles].slice(0, 4);
-    setImages(updated);
-    formik.setFieldValue('warehouseImages', updated);
-  };
+  //   const updated = [...images, ...selectedFiles].slice(0, 4);
+  //   setImages(updated);
+  //   formik.setFieldValue('warehouseImages', updated);
+  // };
 
   const handleCancel = () => router.push('/dashboard');
 
@@ -299,35 +300,34 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
     <Box
       sx={{
         width: '100vw',
-        height: '100vh',
         minHeight: '100vh',
-        p: 1,
+        p: { xs: 0.5, sm: 2 },
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         bgcolor: '#f7f7f7',
-        overflow: 'hidden',
+        overflow: 'auto',
       }}
     >
       <Paper
         elevation={2}
         sx={{
-          width: '98vw',
-          maxWidth: '1200px',
-          minHeight: '90vh',
-          maxHeight: '95vh',
-          p: 2,
+          width: '100%',
+          maxWidth: 1200,
+          minHeight: { xs: 'unset', md: '90vh' },
+          maxHeight: { xs: 'unset', md: '95vh' },
+          p: { xs: 1, sm: 2 },
           border: '1px solid #19191bff',
           borderRadius: 2,
-          overflow: 'hidden',
+          overflow: 'auto',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          <Typography variant="subtitle1" fontWeight={700} sx={{ fontSize: 20, mr: 2 }}>
-            <HomeIcon sx={{ color: '#1411e4', fontSize: 25, mr: 1 }} />
+          <Typography variant="subtitle1" fontWeight={700} sx={{ fontSize: { xs: 16, sm: 20 }, mr: 2 }}>
+            <HomeIcon sx={{ color: '#1411e4', fontSize: { xs: 20, sm: 25 }, mr: 1 }} />
             {id ? 'Edit Warehouse' : 'Add Warehouse'}
           </Typography>
         </Box>
@@ -336,49 +336,45 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
 
           {/* Basic Information Section */}
           <Typography fontWeight={700} sx={{ fontSize: 13, mb: 0.5 }}>Basic Information</Typography>
-          <Grid container spacing={4} mb={1.5}>
-            {/* Left Column */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={1} pl={20}>
-                <FormField label="Warehouse Name" name="warehouse_name" required formik={formik} inputWidth={240} />
-                <FormField label="Address Line 2" name="address2" formik={formik} inputWidth={240} />
-                <FormField label="State" name="state" required formik={formik} type="select" options={(statesCities as any[]).map((s) => s.state)} inputWidth={240} onChange={(e: any) => {
+          <Grid container spacing={2} mb={1.5}>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={1} pl={{ xs: 0, md: 6 }}>
+                <FormField label="Warehouse Name" name="warehouse_name" required formik={formik} inputWidth="100%" />
+                <FormField label="Address Line 2" name="address2" formik={formik} inputWidth="100%" />
+                <FormField label="State" name="state" required formik={formik} type="select" options={(statesCities as any[]).map((s) => s.state)} inputWidth="100%" onChange={(e: any) => {
                   const value = e.target.value;
                   formik.setFieldValue('state', value);
                   const found = (statesCities as any[]).find((s) => s.state === value);
                   setCityOptions(found ? found.cities : []);
                   formik.setFieldValue('city', '');
                 }} />
-                <FormField label="Pincode" name="pincode" required formik={formik} inputWidth={240} />
+                <FormField label="Pincode" name="pincode" required formik={formik} inputWidth="100%" />
               </Box>
             </Grid>
-            {/* Right Column */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={1} pl={3}>
-                <FormField label="Address Line 1" name="address1" required formik={formik} inputWidth={240} />
-                <FormField label="Area / Locality" name="areaLocality" required formik={formik} inputWidth={240} />
-                <FormField label="City" name="city" required formik={formik} type="select" options={cityOptions} inputWidth={240} />
-                <FormField label="GST No." name="gstno" formik={formik} inputWidth={240} />
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={1} pl={{ xs: 0, md: 2 }}>
+                <FormField label="Address Line 1" name="address1" required formik={formik} inputWidth="100%" />
+                <FormField label="Area / Locality" name="areaLocality" required formik={formik} inputWidth="100%" />
+                <FormField label="City" name="city" required formik={formik} type="select" options={cityOptions} inputWidth="100%" />
+                <FormField label="GST No." name="gstno" formik={formik} inputWidth="100%" />
               </Box>
             </Grid>
           </Grid>
           {/* Warehouse Information Section */}
           <Typography fontWeight={700} sx={{ fontSize: 13, mb: 0.5 }}>Warehouse Information</Typography>
-          <Grid container spacing={4} mb={1.5}>
-            {/* Left Column */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={1} pl={20}>
-                <FormField label="Total Plot Area (sqft)" name="totalLotArea" required formik={formik} type="number" inputWidth={240} />
-                <FormField label="No. of Docks" name="noOfDocs" formik={formik} type="number" inputWidth={240} />
-                <FormField label="Storage Height (ft)" name="storageHeight" required formik={formik} type="number" inputWidth={240} />
+          <Grid container spacing={2} mb={1.5}>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={1} pl={{ xs: 0, md: 6 }}>
+                <FormField label="Total Plot Area (sqft)" name="totalLotArea" required formik={formik} type="number" inputWidth="100%" />
+                <FormField label="No. of Docks" name="noOfDocs" formik={formik} type="number" inputWidth="100%" />
+                <FormField label="Storage Height (ft)" name="storageHeight" required formik={formik} type="number" inputWidth="100%" />
               </Box>
             </Grid>
-            {/* Right Column */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={1} pl={3}>
-                <FormField label="Covered Area (sqft)" name="coveredArea" required formik={formik} type="number" inputWidth={240} />
-                <FormField label="No. of Gates" name="noOfGate" formik={formik} type="number" inputWidth={240} />
-                <FormField label="Parking Area (sqft)" name="parkingArea" formik={formik} type="number" inputWidth={240} />
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={1} pl={{ xs: 0, md: 2 }}>
+                <FormField label="Covered Area (sqft)" name="coveredArea" required formik={formik} type="number" inputWidth="100%" />
+                <FormField label="No. of Gates" name="noOfGate" formik={formik} type="number" inputWidth="100%" />
+                <FormField label="Parking Area (sqft)" name="parkingArea" formik={formik} type="number" inputWidth="100%" />
               </Box>
             </Grid>
           </Grid>
@@ -387,10 +383,9 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
             Warehouse Photo Gallery
           </Typography>
 
-          <Grid container spacing={4} mb={1.5}>
-            {/* LEFT COLUMN – IMAGES */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={0.8} pl={20}>
+          <Grid container spacing={2} mb={1.5}>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={0.8} pl={{ xs: 0, md: 6 }}>
 
                 {[
                   'Front View Photo',
@@ -420,8 +415,9 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
                         onChange={(e) => handleSingleImageUpload(e, index)}
                       />
 
-                      {/* File input look-alike */}
+                      {/* File input  */}
                       <label htmlFor={`imageUpload-${index}`}>
+                      
                         <Box
                           sx={{
                             display: 'flex',
@@ -429,7 +425,7 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
                             border: '1px solid #c4c4c4',
                             borderRadius: 0.5,
                             height: 22,
-                            width: 320,
+                            width: { xs: 160, sm: 180, md: 220, lg: 320 }, 
                             ml: 1,
                             px: 0.5,
                             cursor: 'pointer',
@@ -437,7 +433,7 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
                             gap: 0.5,
                           }}
                         >
-                          {/* Choose File button look */}
+                          {/* Choose File button  */}
                           <Typography
                             sx={{
                               fontSize: 9,
@@ -466,7 +462,7 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
                             {images[index]?.name || 'No file chosen'}
                           </Typography>
 
-                          {/* ✅ SMALL IMAGE INSIDE SAME BOX */}
+                          {/* SMALL IMAGE INSIDE BOX */}
                           {images[index] && (
                             <Box
                               sx={{
@@ -515,21 +511,20 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
               </Box>
             </Grid>
 
-            {/* RIGHT COLUMN – STATUS */}
-            <Grid item xs={6}>
-              <Box display="flex" flexDirection="column" gap={1} pl={3}>
+            <Grid item xs={12} md={6}>
+              <Box display="flex" flexDirection="column" gap={1} pl={{ xs: 0, md: 2 }}>
                 <Typography fontWeight={700} sx={{ fontSize: 13, mb: 2 }}>
                   Status
                 </Typography>
-
-                <FormControl size="small" sx={{ width: 120 }}>
+                {/* Status select */}
+                <FormControl size="small" sx={{ width: { xs: 100, sm: 120, md: 140 } }}>
                   <InputLabel sx={{ fontSize: 10 }}>Status</InputLabel>
                   <Select
                     name="status"
                     value={formik.values.status}
                     onChange={formik.handleChange}
                     label="Status"
-                    sx={{ height: 22, fontSize: 10 }}
+                    sx={{ height: 22, fontSize: 10, minWidth: { xs: 80, sm: 100, md: 120 } }}
                   >
                     <MenuItem value="publish">Publish</MenuItem>
                     <MenuItem value="unpublish">Unpublish</MenuItem>
@@ -558,21 +553,24 @@ export default function ListSpacePage({ warehouseId }: { warehouseId: string | n
 function FormField({ label, name, required, formik, type = 'text', options, onChange, inputWidth = 120 }: any) {
   const isError = formik.touched[name] && Boolean(formik.errors[name]);
   const helperText = formik.touched[name] && formik.errors[name];
+ 
   const smallFieldStyle = {
-    '& .MuiInputBase-root': { height: 22, fontSize: 10 },
-    '& .MuiInputLabel-root': { fontSize: 10, top: -4 },
+    '& .MuiInputBase-root': { height: 22, fontSize: 11 },
+    '& .MuiInputLabel-root': { fontSize: 11, top: -4 },
     mb: 0.2,
-    width: inputWidth,
-    maxWidth: inputWidth,
+    width: '100%',
+    maxWidth: 380,
+    minWidth: 0,
   };
   return (
-    <Box>
+    <>
       <Box display="flex" alignItems="center" mb={0.1}>
-        <Typography sx={{ fontSize: 10, minWidth: 80, fontWeight: 500 }}>
+        {/* left margin (ml)  */}
+        <Typography sx={{ fontSize: 11, minWidth: 110, fontWeight: 500, ml: { xs: 2, sm: 3, md: 4 } }}>
           {label} {required && <span style={{ color: 'red' }}>*</span>} :
         </Typography>
         {type === 'select' ? (
-          <FormControl size="small" sx={{ minWidth: 80, ...smallFieldStyle, flex: 1 }}>
+          <FormControl size="small" sx={{ ...smallFieldStyle, flex: 1 }}>
             <InputLabel>{label}</InputLabel>
             <Select
               name={name}
@@ -581,7 +579,7 @@ function FormField({ label, name, required, formik, type = 'text', options, onCh
               onChange={onChange || formik.handleChange}
               onBlur={formik.handleBlur}
               error={isError}
-              sx={{ height: 22, fontSize: 10 }}
+              sx={{ height: 22, fontSize: 10, minWidth: '80px' }}
             >
               {(options || []).map((opt: string) => (
                 <MenuItem key={opt} value={opt}>{opt}</MenuItem>
@@ -607,6 +605,6 @@ function FormField({ label, name, required, formik, type = 'text', options, onCh
           {helperText}
         </Typography>
       )}
-    </Box>
+    </>
   );
 }

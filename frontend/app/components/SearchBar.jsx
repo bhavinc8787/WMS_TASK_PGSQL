@@ -51,20 +51,22 @@ export const SearchBar = ({ onSearch }) => {
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'flex-end',
-        gap: 2,
-        px: 1.2,
-        py: 0.8,
+        flexDirection: { xs: 'column', sm: 'row' },
+        alignItems: { xs: 'stretch', sm: 'flex-end' },
+        gap: { xs: 1.5, sm: 2 },
+        px: { xs: 0.5, sm: 1.2 },
+        py: { xs: 0.8, sm: 0.8 },
         borderRadius: '6px',
         border: '1px solid #dcdcdc',
         boxShadow: '0px 1px 3px rgba(0,0,0,0.08)',
         mb: 2,
         bgcolor: '#fff',
-        flexWrap: 'nowrap',
+        flexWrap: { xs: 'wrap', sm: 'nowrap' },
+        width: '100%',
       }}
     >
       {/* Warehouse Name */}
-      <Box sx={{ minWidth: 160 }}>
+      <Box sx={{ minWidth: { xs: '100%', sm: 160 }, flex: 1 }}>
         <Typography sx={labelStyle}>Warehouse Name</Typography>
         <TextField
           placeholder="Warehouse Name"
@@ -79,7 +81,7 @@ export const SearchBar = ({ onSearch }) => {
       </Box>
 
       {/* State */}
-      <Box sx={{ minWidth: 130 }}>
+      <Box sx={{ minWidth: { xs: '100%', sm: 130 }, flex: 1 }}>
         <Typography sx={labelStyle}>State</Typography>
         <FormControl size="small" sx={{ width: '100%' }}>
           <Select
@@ -99,7 +101,7 @@ export const SearchBar = ({ onSearch }) => {
       </Box>
 
       {/* City */}
-      <Box sx={{ minWidth: 130 }}>
+      <Box sx={{ minWidth: { xs: '100%', sm: 130 }, flex: 1 }}>
         <Typography sx={labelStyle}>City</Typography>
         <FormControl size="small" sx={{ width: '100%' }}>
           <Select
@@ -120,22 +122,22 @@ export const SearchBar = ({ onSearch }) => {
       </Box>
 
       {/* Search */}
-      <Button
-        variant="contained"
-        onClick={handleSearchClick}
-        sx={{ height: 32, fontSize: 12, px: 1.6, textTransform: 'none', fontWeight: 600 }}
-      >
-        Search
-      </Button>
-
-      {/* Reset */}
-      <Button
-        variant="contained"
-        onClick={handleReset}
-        sx={{ height: 32, fontSize: 12, px: 1.6, textTransform: 'none', fontWeight: 600, color: '#000', boxShadow: 'none' }}
-      >
-        Reset
-      </Button>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, gap: { xs: 1, sm: 0 }, mt: { xs: 1, sm: 0 } }}>
+        <Button
+          variant="contained"
+          onClick={handleSearchClick}
+          sx={{ height: 32, fontSize: 12, px: 1.6, textTransform: 'none', fontWeight: 600, minWidth: 80 }}
+        >
+          Search
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleReset}
+          sx={{ height: 32, fontSize: 12, px: 1.6, textTransform: 'none', fontWeight: 600, color: '#000', boxShadow: 'none', minWidth: 80, ml: { xs: 1, sm: 0 }, mt: { xs: 0, sm: 1 } }}
+        >
+          Reset
+        </Button>
+      </Box>
     </Box>
   );
 };
