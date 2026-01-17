@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { config } from './config';
 import path from 'path';
+import { setupSwagger } from './config/swagger';
 
 import warehouseRoutes from './routes/warehouseRoutes';
 import authRoutes from './routes/authRoutes';
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads/warehouses', express.static(path.join(process.cwd(), 'uploads/warehouses')));
 
+// Swagger API docs
+setupSwagger(app);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/warehouses', warehouseRoutes);
